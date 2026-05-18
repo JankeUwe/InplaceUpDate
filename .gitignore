@@ -1,0 +1,8 @@
+# Archives (Quellcode liegt entpackt im Repo)
+*.zip
+
+# Temporäre Dateien
+*.tmp
+*.bak
+Thumbs.db
+desktop.ini
