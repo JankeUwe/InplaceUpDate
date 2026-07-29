@@ -646,6 +646,8 @@ C:\SQLUpgrade_Backup\
     |
     +-- Backup_Summary.json             (backup metadata: size, duration, object counts)
     |
+    +-- TempDB_Paths.txt                (current tempdb physical file paths, one per line)
+    |
     +-- SQLUpgrade_Report.log           (detailed log file)
 ```
 
@@ -662,6 +664,7 @@ C:\SQLUpgrade_Backup\
 | **SSRS_Subscriptions_Inventar.csv** | List of all SSRS subscriptions | Manual re-creation (passwords are not backed up) |
 | **.abf files** | SSAS cube backups | Restore onto the new SSAS instance |
 | **Backup_Summary.json** | Metadata (size, duration, object counts) | Documentation and audit |
+| **TempDB_Paths.txt** | Physical paths of the old tempdb data/log files | Used by the uninstall step to remove old tempdb files that live outside the standard install directories (e.g. moved to a dedicated drive) |
 
 ---
 

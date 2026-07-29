@@ -25,6 +25,26 @@ angegebene Instanz nicht installiert ist, oder bei der Dependencies-Zusammenfass
 Das brach den Wizard/die Skripte sofort ab. Ersetzt durch
 `Select-Object -ExpandProperty ... -ErrorAction SilentlyContinue`.
 
+### Fixed Konsolen-Schmierzeichen (Umlaute)
+
+`[Console]::OutputEncoding` wird jetzt in allen vier Einstiegsskripten auf UTF-8
+gesetzt. Vorher passte die PowerShell-5.1-Standard-Codepage nicht zur
+UTF-8-Kodierung der Skriptdateien, wodurch Umlaute (ü, ä, ö, ß) in der
+Konsolenausgabe als Schmierzeichen erschienen.
+
+### Added TempDB-Erfassung und -Bereinigung
+
+`Start-SQLUpgradeBackup.ps1` erfasst jetzt (Schritt 8) die aktuellen TempDB-Dateipfade
+per `Get-DbaDbFile` und speichert sie in `TempDB_Paths.txt`. Beim Verzeichnis-Cleanup
+in `Invoke-SQLUninstall.ps1` werden diese Dateien gezielt zusätzlich entfernt - relevant
+wenn TempDB per `ALTER DATABASE tempdb MODIFY FILE` auf ein eigenes Laufwerk verschoben
+wurde und dadurch außerhalb der üblichen Installationsverzeichnisse liegt.
+
+### Changed Start-InplaceUpDate.cmd: -NoExit
+
+Das elevierte PowerShell-Fenster bleibt nach Skriptende jetzt offen (`-NoExit`),
+statt sich bei einem Fehler sofort zu schließen, bevor die Fehlermeldung lesbar war.
+
 ## [Unreleased] — 2026-05-23
 
 ### Added Start-InplaceUpDate.cmd

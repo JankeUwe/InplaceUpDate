@@ -84,7 +84,9 @@ echo.
 
 set "LOCALPS=%LOCALDIR%\Start-SQLUpgrade%STEP%.ps1"
 
+:: -NoExit: Fenster bleibt nach Skriptende offen (auch bei Fehlern), damit
+:: Ausgaben/Fehlermeldungen sichtbar bleiben statt das Fenster sofort zu schliessen.
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ^
-    "Start-Process powershell.exe -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File ""%LOCALPS%""' -Verb RunAs"
+    "Start-Process powershell.exe -ArgumentList '-NoProfile -ExecutionPolicy Bypass -NoExit -File ""%LOCALPS%""' -Verb RunAs"
 
 endlocal

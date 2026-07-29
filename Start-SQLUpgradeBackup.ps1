@@ -66,6 +66,11 @@ param(
     [switch]$SkipSSRS
 )
 
+# Konsolen-Ausgabe auf UTF-8 setzen, damit Umlaute (ü, ä, ö, ß) nicht als
+# Schmierzeichen erscheinen (PowerShell 5.1 Standard-Codepage passt sonst
+# nicht zur UTF-8-Kodierung dieser Skriptdateien).
+try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
@@ -207,6 +212,31 @@ try {
                 Write-UpgradeLog "SSAS Sicherung fehlgeschlagen: $_" -Level ERROR
                 $summary['SSAS'] = @{ Status = 'ERROR'; Error = $_.ToString() }
             }
+        }
+        #endregion
+
+        #region --- Schritt 8: TempDB-Pfade erfassen ---
+        # Damit Invoke-SQLUninstall spaeter auch eine TempDB entfernen kann, die
+        # auf ein eigenes Laufwerk verschoben wurde (ALTER DATABASE tempdb MODIFY
+        # FILE) und dadurch ausserhalb der ueblichen Installationsverzeichnisse liegt.
+        Write-UpgradeLog "Schritt 8: TempDB-Pfade erfassen" -Level SECTION
+        try {
+            $tempdbFiles = Get-DbaDbFile @connectParams -Database tempdb -EnableException |
+                Select-Object -ExpandProperty PhysicalName
+
+            if ($tempdbFiles) {
+                $tempdbFiles | Set-Content -Path (Join-Path $outRoot 'TempDB_Paths.txt') -Encoding UTF8
+                Write-UpgradeLog "TempDB-Dateien erfasst: $($tempdbFiles.Count)" -Level INFO
+                $summary['TempDB'] = @{ Status = 'OK'; Files = @($tempdbFiles) }
+            }
+            else {
+                Write-UpgradeLog "Keine TempDB-Dateien gefunden." -Level WARN
+                $summary['TempDB'] = @{ Status = 'WARN'; Files = @() }
+            }
+        }
+        catch {
+            Write-UpgradeLog "TempDB-Pfade konnten nicht ermittelt werden: $_" -Level WARN
+            $summary['TempDB'] = @{ Status = 'ERROR'; Error = $_.ToString() }
         }
         #endregion
 

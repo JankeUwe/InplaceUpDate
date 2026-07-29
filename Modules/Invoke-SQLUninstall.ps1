@@ -167,7 +167,7 @@ function Invoke-SQLUninstall {
             -Type YesNo
 
         if ($cleanupConfirmed) {
-            Invoke-SQLDirectoryCleanup -InstallDirs $installDirs -InstanceName $InstanceName
+            Invoke-SQLDirectoryCleanup -InstallDirs $installDirs -InstanceName $InstanceName -BackupSetPath $OutputPath
         }
     }
     #endregion
@@ -338,7 +338,8 @@ function Get-SQLInstallDirectories {
 function Invoke-SQLDirectoryCleanup {
     param(
         [string[]]$InstallDirs,
-        [string]$InstanceName
+        [string]$InstanceName,
+        [string]$BackupSetPath      # Backup-Set-Verzeichnis, fuer TempDB_Paths.txt (siehe Backup-Schritt 8)
     )
 
     Write-UpgradeLog "Starte Verzeichnis-Cleanup..." -Level INFO
@@ -359,6 +360,29 @@ function Invoke-SQLDirectoryCleanup {
             Write-UpgradeLog "Verbleibende Dateien: $($remaining.Count) - bitte manuell prüfen." -Level WARN
         }
     }
+
+    #region --- Alte TempDB-Dateien ---
+    # Falls TempDB auf ein eigenes Laufwerk verschoben wurde (ALTER DATABASE
+    # tempdb MODIFY FILE), liegen die Dateien ausserhalb der obigen
+    # Installationsverzeichnisse und werden sonst nie entfernt.
+    if ($BackupSetPath) {
+        $tempdbListFile = Join-Path $BackupSetPath 'TempDB_Paths.txt'
+        if (Test-Path $tempdbListFile) {
+            Write-UpgradeLog "Prüfe alte TempDB-Dateien..." -Level INFO
+            $tempdbPaths = Get-Content -Path $tempdbListFile | Where-Object { $_ -and (Test-Path $_) }
+
+            foreach ($tempdbFile in $tempdbPaths) {
+                try {
+                    Remove-Item -Path $tempdbFile -Force -ErrorAction Stop
+                    Write-UpgradeLog "Alte TempDB-Datei entfernt: $tempdbFile" -Level SUCCESS
+                }
+                catch {
+                    Write-UpgradeLog "Alte TempDB-Datei konnte nicht entfernt werden: $tempdbFile - $_" -Level WARN
+                }
+            }
+        }
+    }
+    #endregion
 
     # Shared-Komponenten nur entfernen wenn keine anderen SQL Instanzen vorhanden
     $otherInstances = @()

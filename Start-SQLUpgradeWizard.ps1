@@ -25,6 +25,11 @@
 [CmdletBinding()]
 param()
 
+# Konsolen-Ausgabe auf UTF-8 setzen, damit Umlaute (ü, ä, ö, ß) nicht als
+# Schmierzeichen erscheinen (PowerShell 5.1 Standard-Codepage passt sonst
+# nicht zur UTF-8-Kodierung dieser Skriptdateien).
+try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
