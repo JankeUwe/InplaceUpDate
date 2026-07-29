@@ -23,6 +23,8 @@ bietet an, dort fortzusetzen.
 Die einzelnen Skripte (`Start-SQLUpgradeBackup.ps1` etc.) bleiben unverändert für
 Automatisierung/Scripting nutzbar und sind unten dokumentiert.
 
+Ausführliches Benutzerhandbuch (Englisch): [Docs/SQL_Server_Upgrade_Guide.md](Docs/SQL_Server_Upgrade_Guide.md)
+
 ## Voraussetzungen
 
 - PowerShell 5.1 oder höher

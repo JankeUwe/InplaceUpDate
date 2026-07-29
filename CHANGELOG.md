@@ -10,6 +10,11 @@ sich den Fortschritt über den Neustart zwischen Deinstallation und manueller
 Neuinstallation hinweg (`Modules\Common\Wizard-UI.ps1`, `Modules\Common\WizardState.ps1`).
 `Start-InplaceUpDate.cmd` bietet den Wizard jetzt als Standardoption `0` an.
 
+### Added Docs/SQL_Server_Upgrade_Guide.md
+
+Ausführliches Benutzerhandbuch (Englisch), ersetzt den bisherigen deutschen
+Runbook-Entwurf; um den Wizard-Abschnitt ergänzt und nach `Docs/` verschoben.
+
 ## [Unreleased] — 2026-05-23
 
 ### Added Start-InplaceUpDate.cmd
