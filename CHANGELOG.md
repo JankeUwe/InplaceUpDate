@@ -15,6 +15,16 @@ Neuinstallation hinweg (`Modules\Common\Wizard-UI.ps1`, `Modules\Common\WizardSt
 Ausführliches Benutzerhandbuch (Englisch), ersetzt den bisherigen deutschen
 Runbook-Entwurf; um den Wizard-Abschnitt ergänzt und nach `Docs/` verschoben.
 
+### Fixed Set-StrictMode-Abstürze bei fehlenden Properties
+
+Punkt-Zugriff auf dynamisch benannte oder nicht garantierte Properties
+(`$instProps.$InstanceName` in `Invoke-SQLUninstall.ps1`, `$val.Status`/`.CanProceed`
+in der Backup-Zusammenfassung) warf unter `Set-StrictMode -Version Latest` einen
+Fehler statt `$null` zu liefern, sobald die Property nicht existierte - z.B. wenn die
+angegebene Instanz nicht installiert ist, oder bei der Dependencies-Zusammenfassung.
+Das brach den Wizard/die Skripte sofort ab. Ersetzt durch
+`Select-Object -ExpandProperty ... -ErrorAction SilentlyContinue`.
+
 ## [Unreleased] — 2026-05-23
 
 ### Added Start-InplaceUpDate.cmd

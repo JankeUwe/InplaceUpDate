@@ -215,7 +215,10 @@ function Get-InstalledSQLFeatures {
     if (-not (Test-Path $instKey)) { return $null }
 
     $instProps  = Get-ItemProperty $instKey -ErrorAction SilentlyContinue
-    $instRegKey = $instProps.$InstanceName
+    # Select-Object -ExpandProperty statt Punkt-Zugriff: wenn $InstanceName keine
+    # installierte Instanz ist, existiert die Property nicht - unter Set-StrictMode
+    # würde $instProps.$InstanceName sonst einen Fehler werfen statt $null zu liefern.
+    $instRegKey = $instProps | Select-Object -ExpandProperty $InstanceName -ErrorAction SilentlyContinue
 
     if (-not $instRegKey) { return $null }
 
@@ -296,15 +299,16 @@ function Get-SQLInstallDirectories {
 
     try {
         $instProps  = Get-ItemProperty $instKey -ErrorAction SilentlyContinue
-        $instRegKey = $instProps.$InstanceName
+        $instRegKey = $instProps | Select-Object -ExpandProperty $InstanceName -ErrorAction SilentlyContinue
 
         if ($instRegKey) {
             $setupKey = "$regBase\$instRegKey\Setup"
             if (Test-Path $setupKey) {
                 $setupProps = Get-ItemProperty $setupKey -ErrorAction SilentlyContinue
                 foreach ($prop in @('SQLDataRoot','SQLBinRoot','SQLPath','SqlClusterInstallDir')) {
-                    if ($setupProps.$prop -and (Test-Path $setupProps.$prop)) {
-                        $dirs.Add($setupProps.$prop)
+                    $propValue = $setupProps | Select-Object -ExpandProperty $prop -ErrorAction SilentlyContinue
+                    if ($propValue -and (Test-Path $propValue)) {
+                        $dirs.Add($propValue)
                     }
                 }
             }
@@ -402,7 +406,7 @@ function Invoke-SQLRegistryCleanup {
 
     try {
         $instProps  = Get-ItemProperty $instKey -ErrorAction SilentlyContinue
-        $instRegKey = $instProps.$InstanceName
+        $instRegKey = $instProps | Select-Object -ExpandProperty $InstanceName -ErrorAction SilentlyContinue
 
         if ($instRegKey) {
             $instPath = "$regBase\$instRegKey"

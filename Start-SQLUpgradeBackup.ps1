@@ -215,8 +215,14 @@ try {
 
         foreach ($key in $summary.Keys) {
             $val = $summary[$key]
-            $status = if ($val.Status)      { $val.Status }
-                      elseif ($val.CanProceed -ne $null) { if($val.CanProceed){'OK'}else{'WARN'} }
+            # Select-Object -ExpandProperty statt Punkt-Zugriff: $val ist teils ein
+            # Hashtable (@{Status=...}), teils ein PSCustomObject ohne .Status
+            # (z.B. Test-SQLDependencies-Ergebnis) - unter Set-StrictMode wirft der
+            # direkte Punkt-Zugriff auf eine fehlende Property sonst einen Fehler.
+            $valStatus     = $val | Select-Object -ExpandProperty Status      -ErrorAction SilentlyContinue
+            $valCanProceed = $val | Select-Object -ExpandProperty CanProceed  -ErrorAction SilentlyContinue
+            $status = if ($valStatus)                { $valStatus }
+                      elseif ($null -ne $valCanProceed) { if ($valCanProceed) { 'OK' } else { 'WARN' } }
                       else { 'OK' }
             Write-UpgradeLog "$key : $status" -Level $(if($status -eq 'ERROR'){'ERROR'}elseif($status -eq 'WARN'){'WARN'}else{'SUCCESS'})
         }
