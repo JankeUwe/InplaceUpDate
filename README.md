@@ -3,6 +3,26 @@
 PowerShell-Tool zur Sicherung, Deinstallation und Wiederherstellung von SQL Server Komponenten
 vor und nach einem Inplace-Upgrade.
 
+## Empfohlen: Geführter Wizard
+
+`Start-InplaceUpDate.cmd` → Option `0 - Wizard` (Standardauswahl) startet
+`Start-SQLUpgradeWizard.ps1`. Der Wizard führt interaktiv durch alle drei Phasen
+(Sicherung → Deinstallation → Wiederherstellung), fragt alle Werte mit sinnvollen
+Standardwerten ab und merkt sich den Fortschritt automatisch über den Neustart
+hinweg, der zwischen Deinstallation und der manuellen Neuinstallation der neuen
+SQL Server Version liegt:
+
+```
+Start-InplaceUpDate.cmd Wizard
+```
+
+Wird der Wizard nach einem Neustart erneut gestartet, erkennt er die zuletzt
+gespeicherte Sitzung automatisch (Backup-Set-Pfad, Instanz, erreichte Phase) und
+bietet an, dort fortzusetzen.
+
+Die einzelnen Skripte (`Start-SQLUpgradeBackup.ps1` etc.) bleiben unverändert für
+Automatisierung/Scripting nutzbar und sind unten dokumentiert.
+
 ## Voraussetzungen
 
 - PowerShell 5.1 oder höher

@@ -6,11 +6,13 @@
 :: startet den gewaehlten Schritt als Administrator (UAC).
 ::
 :: Schritte (Auswahl per Menue):
+::   0 - Wizard    (Start-SQLUpgradeWizard.ps1)    - empfohlen, gefuehrter Ablauf
 ::   1 - Backup    (Start-SQLUpgradeBackup.ps1)
 ::   2 - Uninstall (Start-SQLUpgradeUninstall.ps1)
 ::   3 - Restore   (Start-SQLUpgradeRestore.ps1)
 ::
 :: Oder direkt per Parameter:
+::   Start-InplaceUpDate.cmd Wizard
 ::   Start-InplaceUpDate.cmd Backup
 ::   Start-InplaceUpDate.cmd Uninstall
 ::   Start-InplaceUpDate.cmd Restore
@@ -26,6 +28,7 @@ set "LOCALDIR=%ProgramData%\InplaceUpDate"
 set "STEP=%~1"
 
 :: Schritt per Parameter oder Menue
+if /i "%STEP%"=="Wizard"    goto :do_copy
 if /i "%STEP%"=="Backup"    goto :do_copy
 if /i "%STEP%"=="Uninstall" goto :do_copy
 if /i "%STEP%"=="Restore"   goto :do_copy
@@ -34,12 +37,15 @@ echo.
 echo  Start-InplaceUpDate
 echo  ============================================================
 echo.
+echo    0 - Wizard     (empfohlen: gefuehrt durch Sicherung, Deinstallation, Restore)
 echo    1 - Backup     (Logins, LinkedServer, SSIS, SSRS sichern)
 echo    2 - Uninstall  (SQL Server deinstallieren)
 echo    3 - Restore    (Objekte wiederherstellen)
 echo.
-set /p "CHOICE=  Auswahl (1/2/3): "
+set /p "CHOICE=  Auswahl (0/1/2/3) [0]: "
 
+if "%CHOICE%"=="" set "CHOICE=0"
+if "%CHOICE%"=="0" set "STEP=Wizard"
 if "%CHOICE%"=="1" set "STEP=Backup"
 if "%CHOICE%"=="2" set "STEP=Uninstall"
 if "%CHOICE%"=="3" set "STEP=Restore"
