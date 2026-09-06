@@ -3,6 +3,8 @@
 PowerShell-Tool zur Sicherung, Deinstallation und Wiederherstellung von SQL Server Komponenten
 vor und nach einem Inplace-Upgrade.
 
+Entwickelt von [dtcSoftware](https://www.powershelldba.de) (Uwe Janke) — Projektseite: [powershelldba.de/inplaceupdate](https://www.powershelldba.de/inplaceupdate/)
+
 ## Empfohlen: Geführter Wizard
 
 `Start-InplaceUpDate.cmd` → Option `0 - Wizard` (Standardauswahl) startet
